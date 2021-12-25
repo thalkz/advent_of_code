@@ -25,8 +25,16 @@ type Node struct {
 var maze []Node
 var rooms map[rune][]int
 var min int
+var memoState map[int][]rune
+var memoCost map[int]int
+var seen map[string]bool
+var key int
 
 func main() {
+	key = 0
+	memoState = map[int][]rune{}
+	memoCost = map[int]int{}
+	seen = map[string]bool{}
 	maze = generateMaze()
 	rooms = map[rune][]int{
 		'A': {11, 12},
@@ -35,24 +43,21 @@ func main() {
 		'D': {17, 18},
 	}
 	initialState := generateInitialState()
-	// fmt.Println("Maze:", maze)
-	display(initialState, 0, 0)
-
-	min = 1500000
-	next(initialState, 0, 0)
-	fmt.Println(min)
+	display(initialState, 0)
+	next(initialState, 0)
 }
 
-func display(state []rune, depth int, cost int) {
-	fmt.Printf("##################################### depth: %v\n", depth)
+func display(state []rune, cost int) {
+	fmt.Printf("#####################################\n")
 	fmt.Print("# ")
 	for i := 0; i <= 10; i++ {
 		fmt.Printf(" %v ", string(state[i]))
 	}
-	fmt.Printf(" # cost: %v\n", cost)
+	fmt.Printf(" #\n")
 	fmt.Printf("######## %v ### %v ### %v ### %v ########\n", string(state[11]), string(state[13]), string(state[15]), string(state[17]))
 	fmt.Printf("######## %v ### %v ### %v ### %v ########\n", string(state[12]), string(state[14]), string(state[16]), string(state[18]))
 	fmt.Printf("#####################################\n\n")
+	fmt.Printf("Cost : %v\n", cost)
 }
 
 func isCompleted(state []rune) bool {
@@ -75,16 +80,22 @@ func containsAnotherPod(state []rune, room []int, pod rune) bool {
 	return false
 }
 
-func next(state []rune, totalCost int, depth int) {
-	// display(state, depth, totalCost)
-	if totalCost >= min {
-		return
+func isBlockingEntry(state []rune, room []int, dest int) bool {
+	if dest == 11 && state[12] == '.' {
+		return true
+	} else if dest == 13 && state[14] == '.' {
+		return true
+	} else if dest == 15 && state[16] == '.' {
+		return true
+	} else if dest == 17 && state[18] == '.' {
+		return true
 	}
+	return false
+}
+
+func next(state []rune, totalCost int) {
 	if isCompleted(state) {
-		if totalCost < min {
-			min = totalCost
-			display(state, depth, totalCost)
-		}
+		display(state, totalCost)
 		return
 	}
 
@@ -93,39 +104,72 @@ func next(state []rune, totalCost int, depth int) {
 			if i <= 10 {
 				// Go to room
 				for _, j := range rooms[pod] {
-					if containsAnotherPod(state, rooms[pod], pod) || state[j] != '.' {
-						continue
-					}
-					moves, ok := canMove(&state, j, i)
-					if ok {
-						newState := make([]rune, 19)
-						copy(newState, state)
-						newState[i] = '.'
-						newState[j] = pod
-						// fmt.Printf("%s: %v -> %v (room). %v\n", pod, i, j, newState)
-						next(newState, totalCost+(moves*energyCost(pod)), depth+1)
+					if !containsAnotherPod(state, rooms[pod], pod) && !isBlockingEntry(state, rooms[pod], j) {
+						moves, ok := canMoveTo(&state, i, j)
+						if ok {
+							newState := make([]rune, 19)
+							copy(newState, state)
+							newState[i] = '.'
+							newState[j] = pod
+							// fmt.Printf("%s: %v -> %v (room). %v\n", pod, i, j, newState)
+							seen[string(state)] = true
+
+							if seen[string(newState)] {
+								continue
+							}
+
+							memoState[key] = newState
+							memoCost[key] = totalCost + (moves * energyCost(pod))
+							key++
+						}
 					}
 				}
 			} else {
 				// Go to hallway
 				for _, j := range []int{0, 1, 3, 5, 7, 9, 10} {
-					if maze[i].category == pod && !containsAnotherPod(state, rooms[pod], pod) || state[j] != '.' {
-						// If the pod is in the right room and does not block, stay
-						continue
-					}
-					moves, ok := canMove(&state, i, j)
-					if ok {
-						newState := make([]rune, 19)
-						copy(newState, state)
-						newState[i] = '.'
-						newState[j] = pod
-						// fmt.Printf("%s %v -> %v (hallway) %v\n", pod, i, j, newState)
-						next(newState, totalCost+(moves*energyCost(pod)), depth+1)
+					if maze[i].category != pod || containsAnotherPod(state, rooms[pod], pod) {
+						moves, ok := canMoveTo(&state, i, j)
+						if ok {
+							newState := make([]rune, 19)
+							copy(newState, state)
+							newState[i] = '.'
+							newState[j] = pod
+							// fmt.Printf("%s %v -> %v (hallway) %v\n", pod, i, j, newState)
+
+							if seen[string(newState)] {
+								continue
+							}
+
+							seen[string(state)] = true
+
+							memoState[key] = newState
+							memoCost[key] = totalCost + (moves * energyCost(pod))
+							key++
+						}
 					}
 				}
 			}
 		}
 	}
+
+	// Find state with lowest cost
+	minKey := 0
+	minCost := 1000000
+	var minState []rune
+	for key, cost := range memoCost {
+		if cost < minCost {
+			minKey = key
+			minCost = cost
+			minState = memoState[minKey]
+		}
+	}
+	delete(memoState, minKey)
+	delete(memoCost, minKey)
+
+	fmt.Println(minCost)
+
+	// Compute next step for lowest cost
+	next(minState, minCost)
 }
 
 func energyCost(pod rune) int {
@@ -142,62 +186,27 @@ func energyCost(pod rune) int {
 	return 0
 }
 
-func canMove(state *[]rune, roomIndex int, hallwayIndex int) (int, bool) {
-	if roomIndex == 12 && (*state)[11] != '.' {
-		return 0, false
-	} else if roomIndex == 14 && (*state)[13] != '.' {
-		return 0, false
-	} else if roomIndex == 16 && (*state)[15] != '.' {
-		return 0, false
-	} else if roomIndex == 18 && (*state)[17] != '.' {
-		return 0, false
-	}
-	entrance := getEntrance(roomIndex)
-	distance := 1
-	if roomIndex == 12 || roomIndex == 14 || roomIndex == 16 || roomIndex == 18 {
-		distance++
-	}
-
-	if hallwayIndex > entrance {
-		for i := entrance; i < hallwayIndex; i++ {
-			distance++
-			if (*state)[i] != '.' {
-				return 0, false
-			}
-		}
-		return distance, true
-	} else {
-		for i := entrance; i > hallwayIndex; i-- {
-			distance++
-			if (*state)[i] != '.' {
-				return 0, false
-			}
-		}
-		return distance, true
-	}
+func canMoveTo(state *[]rune, start int, end int) (int, bool) {
+	visited := make([]bool, 19)
+	moves, ok := explore(state, visited, start, end, 1)
+	return moves, ok
 }
 
-func getEntrance(start int) int {
-	switch start {
-	case 11:
-		return 2
-	case 12:
-		return 2
-	case 13:
-		return 4
-	case 14:
-		return 4
-	case 15:
-		return 6
-	case 16:
-		return 6
-	case 17:
-		return 8
-	case 18:
-		return 8
+func explore(state *[]rune, visited []bool, start int, end int, distance int) (int, bool) {
+	for _, index := range maze[start].links {
+		if !visited[index] && (*state)[index] == '.' {
+			visited[index] = true
+			if index == end {
+				return distance, true
+			} else {
+				distance, ok := explore(state, visited, index, end, distance+1)
+				if ok {
+					return distance, ok
+				}
+			}
+		}
 	}
-	fmt.Print(start)
-	return -1
+	return 0, false
 }
 
 func generateInitialState() []rune {
