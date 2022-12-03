@@ -1,21 +1,20 @@
-# A - Rock
-# B - Paper
-# C - Sissors
+# C > B > A > C
+# Z > Y > X > Z
 
 defmodule Solution do
   def compute_score(line) do
-    IO.puts(line)
     [him, outcome] = String.split(line, " ")
     outcomeScore = compute_outcome_score(outcome)
-    IO.puts("outcomeScore: #{outcomeScore}")
-    myMove = compute_my_move(him, outcome)
-    myMoveScore = compute_move_score(myMove)
-    IO.puts("My move: #{myMove} (score=#{myMoveScore})")
+
+    myMoveScore =
+      compute_my_move(him, outcome)
+      |> compute_move_score()
+
     outcomeScore + myMoveScore
   end
 
-  def compute_outcome_score(me) do
-    case me do
+  def compute_outcome_score(outcome) do
+    case outcome do
       "X" -> 0
       "Y" -> 3
       "Z" -> 6
@@ -47,24 +46,6 @@ defmodule Solution do
       "A" -> "B"
       "B" -> "C"
       "C" -> "A"
-    end
-  end
-
-  def compute_win_score(him, me) do
-    cond do
-      him == me -> 3
-      him == "A" && me == "C" -> 0
-      him == "C" && me == "A" -> 6
-      him > me -> 0
-      true -> 6
-    end
-  end
-
-  def to_abc(me) do
-    case me do
-      "X" -> "A"
-      "Y" -> "B"
-      "Z" -> "C"
     end
   end
 end
