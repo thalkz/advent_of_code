@@ -1,63 +1,45 @@
-import Foundation
-
-func readFile(filename: String) -> String {
-    var result = ""
-    do {
-        result = try String(contentsOfFile: "./"+filename, encoding: .utf8)
-    }
-    catch {
-            print("ERROR: Cannot read file")
-    }
-    return result
-}
-
-var numbers: [String: Int] = [
-    "one":1,
-    "two":2,
-    "three":3,
-    "four":4,
-    "five":5,
-    "six":6,
-    "seven":7,
-    "eight":8,
-    "nine":9,
+var numbers = [
+  try Regex("one"),
+  try Regex("two"),
+  try Regex("three"),
+  try Regex("four"),
+  try Regex("five"),
+  try Regex("six"),
+  try Regex("seven"),
+  try Regex("eight"),
+  try Regex("nine"),
 ]
 
-let content = readFile(filename: "in.txt")
-let lines = content.split(separator: "\n")
-
-var total = 0
-for line in lines {
-    var first = -1
-    var last = -1
-
-    for index in line.indices {
-        let integer = Int("\(line[index])")
-        if let integer {
-            if first == -1 {
-                first = integer
-            }
-            last = integer
-        } else {
-            let suffix = line.suffix(from: index)
-            for (key, value) in numbers {
-                let regex = try Regex(key)
-                let match = suffix.prefixMatch(of: regex)
-                if match != nil {
-                    if first == -1 {
-                        first = value
-                    }
-                    last = value
-                    break
-                }
-            }
-        }
+func parseDigit(_ line: String, _ index: String.Index) -> Int? {
+  if let integer = Int("\(line[index])") {
+    return integer
+  } else {
+    let suffix = line.suffix(from: index)
+    for (i, regex) in numbers.enumerated() {
+      if suffix.prefixMatch(of: regex) != nil {
+        return i + 1
+      }
     }
-    if first == -1 || last == -1 {
-        print(line)
-    }
-    let toAdd = 10 * first + last
-    total = total + toAdd
+  }
+  return nil
 }
 
-print(total)
+var total = 0
+var first: Int
+var last: Int
+
+while let line = readLine() {
+  first = -1
+  last = -1
+  for index in line.indices {
+    if let digit = parseDigit(line, index) {
+      if first == -1 {
+        first = digit
+      }
+      last = digit
+    }
+  }
+  total += 10 * first + last
+}
+
+print("solution:", total)
