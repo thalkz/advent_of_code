@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:day_3}",
+            "name": "Debug day_3_bis",
+            "program": "${workspaceFolder:day_3}/.build/debug/day_3_bis",
+            "preLaunchTask": "swift: Build Debug day_3_bis"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:day_3}",
+            "name": "Release day_3_bis",
+            "program": "${workspaceFolder:day_3}/.build/release/day_3_bis",
+            "preLaunchTask": "swift: Build Release day_3_bis"
+        }
+    ]
+}
