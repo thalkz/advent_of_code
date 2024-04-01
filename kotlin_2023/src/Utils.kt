@@ -8,6 +8,6 @@ fun verify(name: String, actual: Any, expected: Any) {
     if (correct) {
         println("$name $actual CORRECT ✅")
     } else {
-        println("$name expected $expected, got $actual ❌ ()")
+        println("$name expected $expected, got $actual ❌")
     }
 }
