@@ -9,7 +9,6 @@ const val day = 20
 fun main() {
     println("Day $day")
 
-    // test if implementation meets criteria from the description, like:
     val testInput = readInput(day, "small")
     verify(
         name = "Part1_small",
@@ -33,7 +32,7 @@ fun main() {
     verify(
         name = "Part2",
         actual = part2(input),
-        expected = 0,
+        expected = 244178746156661,
     )
 }
 
@@ -75,10 +74,6 @@ class BroadcastModule(name: String, eventSink: Queue<Pulse>) : Module(name, even
     override fun receive(from: String, pulseType: PulseType) {
         send(pulseType)
     }
-
-    override fun toString(): String {
-        return name
-    }
 }
 
 class FlipFlopModule(name: String, eventSink: Queue<Pulse>) : Module(name, eventSink) {
@@ -97,10 +92,6 @@ class FlipFlopModule(name: String, eventSink: Queue<Pulse>) : Module(name, event
 
             PulseType.High -> {}
         }
-    }
-
-    override fun toString(): String {
-        return "name $isOn"
     }
 }
 
@@ -126,10 +117,6 @@ class ConjunctionModule(name: String, eventSink: Queue<Pulse>) : Module(name, ev
         } else {
             send(PulseType.High)
         }
-    }
-
-    override fun toString(): String {
-        return "name ${lastReceivedPulses.entries.joinToString { "${it.key}-${it.value.name}" }}"
     }
 }
 
@@ -206,7 +193,6 @@ fun part1(lines: List<String>): Int {
         queue.offer(initialPulse)
         while (queue.isNotEmpty()) {
             val pulse = queue.remove()
-            //  println("${pulse.from.name} -${pulse.type.name}-> ${pulse.to.name}")
             when (pulse.type) {
                 PulseType.Low -> lowCount++
                 PulseType.High -> highCount++
@@ -218,7 +204,7 @@ fun part1(lines: List<String>): Int {
     return lowCount * highCount
 }
 
-fun part2(lines: List<String>): Int {
+fun part2(lines: List<String>): Long {
     val queue: Queue<Pulse> = LinkedList()
     val modules = createModules(lines, queue)
 
@@ -229,6 +215,12 @@ fun part2(lines: List<String>): Int {
     )
 
     var count = 0
+    var preModules = mutableMapOf<String, Int>(
+        "xm" to 0,
+        "pv" to 0,
+        "qh" to 0,
+        "hz" to 0,
+    )
 
     while (true) {
         count++
@@ -237,8 +229,14 @@ fun part2(lines: List<String>): Int {
             val pulse = queue.remove()
             //  println("${pulse.from.name} -${pulse.type.name}-> ${pulse.to.name}")
 
-            if (pulse.to.name == "rx" && pulse.type == PulseType.Low) {
-                return count
+            if (pulse.type == PulseType.High && preModules.containsKey(pulse.from.name)) {
+                if (preModules[pulse.from.name] == 0) {
+                    preModules[pulse.from.name] = count
+                }
+
+                if (preModules.all { it.value > 0 }) {
+                    return preModules.values.fold(1L) { acc, value -> acc * value.toLong() }
+                }
             }
 
             pulse.to.receive(pulse.from.name, pulse.type)
