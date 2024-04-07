@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.thalkz"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 sourceSets {
     main {
