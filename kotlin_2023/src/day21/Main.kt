@@ -11,14 +11,14 @@ fun main() {
     val testInput = readInput(day, "small")
     verify(
         name = "Part1_small",
-        actual = part1(testInput),
+        actual = part1(testInput, steps = 6),
         expected = 16,
     )
 
     val mediumInput = readInput(day, "input")
     verify(
         name = "Part1",
-        actual = part1(mediumInput),
+        actual = part1(mediumInput, steps = 64),
         expected = 3733,
     )
 //
