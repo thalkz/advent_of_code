@@ -8,39 +8,36 @@ data class Point(
         return arrayOf(
             Point(i + 1, j),
             Point(i - 1, j),
-            Point(i, j+1),
-            Point(i, j-1),
+            Point(i, j + 1),
+            Point(i, j - 1),
         )
     }
 }
-
 
 class Garden private constructor(
     private val grass: Array<Array<Boolean>>,
     val startingPoint: Point,
 ) {
-    val height: Int = grass.size
-    val width: Int = grass.first().size
+    private val size: Int = 131
 
     fun isGrass(point: Point): Boolean {
-        return grass[point.j][point.i]
+        if (point.i < 0 || point.i >= size || point.j < 0 || point.j >= size) {
+            return false
+        }
+        return grass[Math.floorMod(point.j, 131)][Math.floorMod(point.i, 131)]
     }
 
-    fun print(points: Set<Point>) {
-        for (j in 0..<height) {
-            for (i in 0..<width) {
-                val point = Point(i,j)
-                print(
-                    when {
-                        point in points -> "0"
-                        isGrass(point) -> "."
-                        else -> "#"
+    fun getAllGrass(): List<Point> {
+        return buildList {
+            for (j in 0..<131) {
+                for (i in 0..<131) {
+                    val point = Point(i, j)
+                    if (isGrass(point)) {
+                        add(point)
                     }
-                )
+                }
             }
-            println()
         }
-        println()
     }
 
     companion object {
@@ -49,16 +46,14 @@ class Garden private constructor(
             for (j in lines.indices) {
                 for (i in lines[j].indices) {
                     if (lines[j][i] == 'S') {
-                        startingPoint = Point(i,j)
+                        startingPoint = Point(i, j)
                     }
                 }
             }
 
-            val grass = lines
-                .map { line ->
-                    line.map { it == '.' || it == 'S' }.toTypedArray()
-                }
-                .toTypedArray()
+            val grass = lines.map { line ->
+                line.map { it == '.' || it == 'S' }.toTypedArray()
+            }.toTypedArray()
 
             return Garden(grass, startingPoint!!)
         }

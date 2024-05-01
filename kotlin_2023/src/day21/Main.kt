@@ -14,23 +14,16 @@ fun main() {
         actual = part1(testInput, steps = 6),
         expected = 16,
     )
-
-    val mediumInput = readInput(day, "input")
+    val input = readInput(day, "input")
     verify(
         name = "Part1",
-        actual = part1(mediumInput, steps = 64),
+        actual = part1(input, steps = 64),
         expected = 3733,
     )
-//
-//    val input = readInput(day, "input")
-//    verify(
-//        name = "Part1",
-//        actual = part1(input),
-//        expected = 731517480,
-//    )
-//    verify(
-//        name = "Part2",
-//        actual = part2(input),
-//        expected = 244178746156661,
-//    )
+
+    verify(
+        name = "Part2",
+        actual = part2(input),
+        expected = 617729401414635,
+    )
 }
