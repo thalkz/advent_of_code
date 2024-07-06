@@ -18,3 +18,5 @@ repositories {
 kotlin {
     jvmToolchain(17)
 }
+dependencies {
+}
