@@ -19,6 +19,18 @@ fun main() {
     verify(
         name = "Part1",
         actual = part1(input),
-        expected = 94,
+        expected = 2030,
+    )
+
+    verify(
+        name = "Part2_small",
+        actual = part2(testInput),
+        expected = 154,
+    )
+
+    verify(
+        name = "Part2",
+        actual = part2(input),
+        expected = 6390,
     )
 }

@@ -56,7 +56,6 @@ class Grid(
     ) {
         val isEnd = lastPoint.y == lines.lastIndex
         if (isEnd) {
-            println("Reached end")
             val node = nodes.getOrPut(lastPoint) { Node(lastPoint) }
             fromNode.edges.add(
                 Edge(
@@ -74,7 +73,6 @@ class Grid(
 //        println("current=$lastPoint dir=$lastDirection next=${next} isNode=$isNode")
 
         if (isNode) {
-            println("Reached node $lastPoint")
             val node = nodes.getOrPut(lastPoint) { Node(lastPoint) }
             fromNode.edges.add(
                 Edge(
@@ -124,7 +122,6 @@ fun dfs(node: Node, distance: Int): Int {
         return distance
     }
 
-    println("visiting node at ${node.point}")
     return node.edges.maxOf {
         it.distance + dfs(it.to, distance)
     }
