@@ -1,7 +1,5 @@
 package day23
 
-import java.util.PriorityQueue
-
 class Part2Grid(
     val lines: List<String>
 ) {
@@ -71,35 +69,34 @@ fun part2(lines: List<String>): Int {
         println("nodes = ${allNodes.size}")
     }
 
-    return Solver(
-        lines.lastIndex,
-        mutableSetOf(startNode.point)
-    ).dfsWithVisited(startNode, 0)
+    return Solver(lines.lastIndex)
+        .search(startNode, 0, setOf(startNode.point))
 }
 
-class Solver(
-    private val lastIndexRow: Int,
-    private val visited: MutableSet<Point>
-) {
-    var max = 0
+class Solver(private val lastIndexRow: Int) {
+    private val bestPaths = mutableMapOf<String, Int>()
 
     private fun isEnd(p: Point) = p.y == lastIndexRow
 
-    fun dfsWithVisited(node: Node, totalDistance: Int): Int {
+    private fun toKey(path: Set<Point>, end: Point) = path.map { it.toString() }.sorted().joinToString() + end.toString()
+
+    fun search(node: Node, distance: Int, trail: Set<Point>): Int {
         if (isEnd(node.point)) {
-            if (totalDistance > max) {
-                max = totalDistance
-                println("dist=$totalDistance, visited=${visited.size}")
-            }
-            return totalDistance
+            return distance
         }
 
-       return node.edges.maxOf { edge ->
-            if (edge.to.point !in visited) {
-                visited.add(edge.to.point)
-                dfsWithVisited(edge.to, edge.distance + totalDistance).also {
-                    visited.remove(edge.to.point)
-                }
+        return node.edges.maxOf {edge ->
+            if (edge.to.point in trail) {
+                return@maxOf 0
+            }
+
+            val newDistance = edge.distance + distance
+            val newTrail = trail + edge.to.point
+            val key = toKey(newTrail, edge.to.point)
+
+            if (newDistance > bestPaths.getOrDefault(key, defaultValue = 0)) {
+                bestPaths[key] = newDistance
+                search(edge.to, newDistance, newTrail)
             } else {
                 0
             }
