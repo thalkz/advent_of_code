@@ -27,4 +27,9 @@ fun main() {
         actual = part2(testInput),
         expected = 47,
     )
+    verify(
+        name = "Part2",
+        actual = part2(input),
+        expected = 0,
+    )
 }

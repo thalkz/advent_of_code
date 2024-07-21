@@ -2,14 +2,14 @@ package day24
 
 import kotlin.math.sign
 
-private data class Point(
+private data class Point2D(
     val x: Double,
     val y: Double,
 )
 
 private data class Formula(
-    val p: Point,
-    val dp: Point,
+    val p: Point2D,
+    val dp: Point2D,
     val a: Double,
     val b: Double,
 )
@@ -18,9 +18,9 @@ internal fun part1(lines: List<String>, min: Double, max: Double): Int {
     val pairs = lines.map {
         val parts = it.split("@")
         val left = parts[0].split(",")
-        val p0 = Point(left[0].trim().toDouble(), left[1].trim().toDouble())
+        val p0 = Point2D(left[0].trim().toDouble(), left[1].trim().toDouble())
         val right = parts[1].split(",")
-        val dp0 = Point(right[0].trim().toDouble(), right[1].trim().toDouble())
+        val dp0 = Point2D(right[0].trim().toDouble(), right[1].trim().toDouble())
         p0 to dp0
     }
 
@@ -52,17 +52,17 @@ internal fun part1(lines: List<String>, min: Double, max: Double): Int {
     return result
 }
 
-private fun Formula.intersect(other: Formula): Point {
-    return Point(
+private fun Formula.intersect(other: Formula): Point2D {
+    return Point2D(
         x = -(b - other.b) / (a - other.a),
         y = (a * -(b - other.b) / (a - other.a)) + b,
     )
 }
 
-private fun Formula.isFuture(intersect: Point) : Boolean {
+private fun Formula.isFuture(intersect: Point2D) : Boolean {
     return dp.x.sign == (intersect.x - p.x).sign || dp.y.sign == (intersect.y - p.y).sign
 }
 
-private fun Point.isInside(min: Double, max: Double) : Boolean {
+private fun Point2D.isInside(min: Double, max: Double) : Boolean {
     return x in min..max && y in min..max
 }
