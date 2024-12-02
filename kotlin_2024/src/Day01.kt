@@ -7,8 +7,7 @@ fun main() {
         val left = IntArray(input.size) // int[]
         val right = IntArray(input.size) // int[]
         input.forEachIndexed { i, line -> // kotlin.collections.Iterable<T>::forEachIndexed
-            val (leftValue, rightValue) = line
-                .split("   ") // kotlin.text.CharSequence::split (return a java.util.ArrayList<String>)
+            val (leftValue, rightValue) = line.split("   ") // kotlin.text.CharSequence::split (return a java.util.ArrayList<String>)
             left[i] = leftValue.toInt()
             right[i] = rightValue.toInt()
         }
