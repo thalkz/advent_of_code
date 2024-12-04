@@ -1,0 +1,64 @@
+package com.thalkz
+
+fun main() {
+    fun part1(input: List<String>): Int {
+        val reports = parseInput(input)
+
+        val increasing = reports.count { it.isValid(1..3) }
+        val decreasing = reports.count { it.isValid(-3..-1) }
+
+        return increasing + decreasing
+    }
+
+    fun part2(input: List<String>): Int {
+        val reports = parseInput(input)
+
+        val increasing = reports.count { it.isAnyValidWithSkipped(1..3) }
+        val decreasing = reports.count { it.isAnyValidWithSkipped(-3..-1) }
+
+        return increasing + decreasing
+    }
+
+    val inputFile = "Day02"
+    verify("${inputFile}_test", ::part1, 2)
+    verify("${inputFile}_test", ::part2, 4)
+
+    solvePart1(inputFile, ::part1)
+    solvePart2(inputFile, ::part2)
+}
+
+fun parseInput(input: List<String>): List<List<Int>> = input.map { line ->
+    line.split(" ").map { it.toInt() }
+}
+
+fun List<Int>.isValid(range: IntRange): Boolean {
+    for (i in 0 until lastIndex) {
+        if (this[i + 1] - this[i] !in range) {
+            return false
+        }
+    }
+    return true
+}
+
+fun List<Int>.isAnyValidWithSkipped(range: IntRange): Boolean {
+    if (isValid(range)) return true
+
+    for (skipped in 0..lastIndex) {
+        if (isValidWithSkipped(range, skipped)) {
+            return true
+        }
+    }
+    return false
+}
+
+fun List<Int>.isValidWithSkipped(range: IntRange, skipped: Int): Boolean {
+    var lastLevel: Int? = null
+    for (i in 0..lastIndex) {
+        if (i == skipped) continue
+        if (lastLevel != null && this[i] - lastLevel !in range) {
+            return false
+        }
+        lastLevel = this[i]
+    }
+    return true
+}
