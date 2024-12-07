@@ -2,13 +2,10 @@ package com.thalkz
 
 class Page(
     val id: Int,
-    val before: MutableSet<Page> = mutableSetOf()
+    val before: MutableSet<Page> = mutableSetOf() // java.util.LinkedHashSet<E>
 ) : Comparable<Page> {
 
-    override fun compareTo(other: Page): Int {
-        if (other in before) return -1
-        return 1
-    }
+    override fun compareTo(other: Page) = if (other in before) -1 else 1
 
     override fun equals(other: Any?) = (id == (other as? Page)?.id)
 
@@ -18,7 +15,7 @@ class Page(
 val List<Page>.middleValue
     get() = this[this.size / 2].id
 
-fun List<Page>.isValid(): Boolean {
+fun List<Page>.isValidOrder(): Boolean {
     val allBefore = mutableSetOf<Page>()
     for (current in this) {
         if (current in allBefore) {
@@ -32,18 +29,19 @@ fun List<Page>.isValid(): Boolean {
 fun main() {
     fun parseInput(lines: List<String>): Array<List<Page>> {
         val pages = mutableMapOf<Int, Page>()
-        var i = 0
-        while (lines[i].isNotEmpty()) {
-            val (fromId, toId) = lines[i].split("|").map { it.toInt() }
+
+        var lineIndex = 0
+        while (lines[lineIndex].isNotEmpty()) {
+            val (fromId, toId) = lines[lineIndex].split("|").map { it.toInt() }
             val from = pages.getOrPut(fromId) { Page(fromId) }
             val to = pages.getOrPut(toId) { Page(toId) }
             to.before.add(from)
-            i++
+            lineIndex++
         }
 
-        val firstLineIndex = i+1
-        val orders = Array(lines.size - firstLineIndex) { index ->
-            lines[firstLineIndex + index]
+        lineIndex += 1 // skip empty line
+        val orders = Array(lines.size - lineIndex) { i ->
+            lines[lineIndex + i]
                 .split(",")
                 .map { pages[it.toInt()]!! }
         }
@@ -54,27 +52,17 @@ fun main() {
     fun part1(lines: List<String>): Int {
         val orders = parseInput(lines)
 
-        var result = 0
-        for (order in orders) {
-            if (order.isValid()) {
-                result += order.middleValue
-            }
-        }
-
-        return result
+        return orders
+            .filter { it.isValidOrder() }
+            .sumOf { it.middleValue }
     }
 
     fun part2(lines: List<String>): Int {
         val orders = parseInput(lines)
 
-        var result = 0
-        for (order in orders) {
-            if (!order.isValid()) {
-                result += order.sorted().middleValue
-            }
-        }
-
-        return result
+        return orders
+            .filter { !it.isValidOrder() }
+            .sumOf { it.sorted().middleValue }
     }
 
     val inputFile = "Day05"

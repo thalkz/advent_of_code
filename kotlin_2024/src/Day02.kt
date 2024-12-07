@@ -4,8 +4,8 @@ fun main() {
     fun part1(input: List<String>): Int {
         val reports = parseInput(input)
 
-        val increasing = reports.count { it.isValid(1..3) }
-        val decreasing = reports.count { it.isValid(-3..-1) }
+        val increasing = reports.count { it.isValidOrder(1..3) }
+        val decreasing = reports.count { it.isValidOrder(-3..-1) }
 
         return increasing + decreasing
     }
@@ -31,7 +31,7 @@ fun parseInput(input: List<String>): List<List<Int>> = input.map { line ->
     line.split(" ").map { it.toInt() }
 }
 
-fun List<Int>.isValid(range: IntRange): Boolean {
+fun List<Int>.isValidOrder(range: IntRange): Boolean {
     for (i in 0 until lastIndex) {
         if (this[i + 1] - this[i] !in range) {
             return false
@@ -41,7 +41,7 @@ fun List<Int>.isValid(range: IntRange): Boolean {
 }
 
 fun List<Int>.isAnyValidWithSkipped(range: IntRange): Boolean {
-    if (isValid(range)) return true
+    if (isValidOrder(range)) return true
 
     for (skipped in 0..lastIndex) {
         if (isValidWithSkipped(range, skipped)) {
