@@ -3,32 +3,34 @@ package com.thalkz
 class Page(
     val id: Int,
     val before: MutableSet<Page> = mutableSetOf()
-)
+) : Comparable<Page> {
 
-class Input(
-    val pages: Map<Int, Page>,
-    val toPrintList: Array<ToPrint>,
-)
-
-class ToPrint(
-    private val toPrintIds: List<Int>
-) {
-    val middleValue = toPrintIds[toPrintIds.size / 2]
-
-    fun isValid(pages: Map<Int, Page>): Boolean {
-        val before = mutableSetOf<Int>()
-        for (currentId in toPrintIds) {
-            if (currentId in before) {
-                return false
-            }
-            before += pages[currentId]!!.before.map { it.id }
-        }
-        return true
+    override fun compareTo(other: Page): Int {
+        if (other in before) return -1
+        return 1
     }
+
+    override fun equals(other: Any?) = (id == (other as? Page)?.id)
+
+    override fun hashCode() = id.hashCode()
+}
+
+val List<Page>.middleValue
+    get() = this[this.size / 2].id
+
+fun List<Page>.isValid(): Boolean {
+    val allBefore = mutableSetOf<Page>()
+    for (current in this) {
+        if (current in allBefore) {
+            return false
+        }
+        allBefore += current.before
+    }
+    return true
 }
 
 fun main() {
-    fun parseInput(lines: List<String>): Input {
+    fun parseInput(lines: List<String>): Array<List<Page>> {
         val pages = mutableMapOf<Int, Page>()
         var i = 0
         while (lines[i].isNotEmpty()) {
@@ -40,36 +42,45 @@ fun main() {
         }
 
         val firstLineIndex = i+1
-        val toPrintList = Array(lines.size - firstLineIndex) {
-            val toPrintIds = lines[firstLineIndex + it].split(",").map { it.toInt() }
-            ToPrint(toPrintIds)
+        val orders = Array(lines.size - firstLineIndex) { index ->
+            lines[firstLineIndex + index]
+                .split(",")
+                .map { pages[it.toInt()]!! }
         }
 
-        return Input(pages, toPrintList)
+        return orders
     }
 
     fun part1(lines: List<String>): Int {
-        val input = parseInput(lines)
+        val orders = parseInput(lines)
 
         var result = 0
-        for (toPrint in input.toPrintList) {
-            if (toPrint.isValid(input.pages)) {
-                result += toPrint.middleValue
+        for (order in orders) {
+            if (order.isValid()) {
+                result += order.middleValue
             }
         }
 
         return result
     }
 
-    fun part2(input: List<String>): Int {
-        val parsed = parseInput(input)
-        return 0
+    fun part2(lines: List<String>): Int {
+        val orders = parseInput(lines)
+
+        var result = 0
+        for (order in orders) {
+            if (!order.isValid()) {
+                result += order.sorted().middleValue
+            }
+        }
+
+        return result
     }
 
     val inputFile = "Day05"
     verify("${inputFile}_test", ::part1, 143)
-//    verify("${inputFile}_test", ::part2, 0)
+    verify("${inputFile}_test", ::part2, 123)
 
     solvePart1(inputFile, ::part1)
-//    solvePart2(inputFile, ::part2)
+    solvePart2(inputFile, ::part2)
 }
