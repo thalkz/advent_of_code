@@ -27,11 +27,11 @@ fun main() {
     solvePart2(inputFile, ::part2)
 }
 
-fun parseInput(input: List<String>): List<List<Int>> = input.map { line ->
+private fun parseInput(input: List<String>): List<List<Int>> = input.map { line ->
     line.split(" ").map { it.toInt() }
 }
 
-fun List<Int>.isValidOrder(range: IntRange): Boolean {
+private fun List<Int>.isValidOrder(range: IntRange): Boolean {
     for (i in 0 until lastIndex) {
         if (this[i + 1] - this[i] !in range) {
             return false
@@ -40,7 +40,7 @@ fun List<Int>.isValidOrder(range: IntRange): Boolean {
     return true
 }
 
-fun List<Int>.isAnyValidWithSkipped(range: IntRange): Boolean {
+private fun List<Int>.isAnyValidWithSkipped(range: IntRange): Boolean {
     if (isValidOrder(range)) return true
 
     for (skipped in 0..lastIndex) {
@@ -51,7 +51,7 @@ fun List<Int>.isAnyValidWithSkipped(range: IntRange): Boolean {
     return false
 }
 
-fun List<Int>.isValidWithSkipped(range: IntRange, skipped: Int): Boolean {
+private fun List<Int>.isValidWithSkipped(range: IntRange, skipped: Int): Boolean {
     var lastLevel: Int? = null
     for (i in 0..lastIndex) {
         if (i == skipped) continue

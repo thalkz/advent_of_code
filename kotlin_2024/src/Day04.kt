@@ -40,7 +40,7 @@ fun main() {
     solvePart2(inputFile, ::part2)
 }
 
-fun List<String>.checkXmasStartingAt(i: Int, j: Int): Int {
+private fun List<String>.checkXmasStartingAt(i: Int, j: Int): Int {
     var result = 0
     for (di in -1..1) {
         for (dj in -1..1) {
@@ -51,7 +51,7 @@ fun List<String>.checkXmasStartingAt(i: Int, j: Int): Int {
     return result
 }
 
-fun List<String>.checkXmasStartingAtWithDirection(i: Int, j: Int, di: Int, dj: Int): Boolean {
+private fun List<String>.checkXmasStartingAtWithDirection(i: Int, j: Int, di: Int, dj: Int): Boolean {
     part1Word.forEachIndexed { index, char ->
         if (this.at(i +index * di,j+index * dj) != char) {
             return false
@@ -60,17 +60,17 @@ fun List<String>.checkXmasStartingAtWithDirection(i: Int, j: Int, di: Int, dj: I
     return true
 }
 
-fun List<String>.checkMasCrossAt(i: Int, j: Int): Boolean {
+private fun List<String>.checkMasCrossAt(i: Int, j: Int): Boolean {
     if (at(i,j) != 'A') return false
     return (isMasDiagonal(i,j, 1, 1) || isMasDiagonal(i,j, -1, -1))
             && (isMasDiagonal(i,j, 1, -1) || isMasDiagonal(i,j, -1, 1))
 }
 
-fun List<String>.isMasDiagonal(i: Int, j: Int, di: Int, dj: Int): Boolean {
+private fun List<String>.isMasDiagonal(i: Int, j: Int, di: Int, dj: Int): Boolean {
     return at(i-di,j-dj) == 'M' && at(i+di,j+dj) == 'S'
 }
 
-fun List<String>.at(i : Int, j:Int) : Char? {
+private fun List<String>.at(i : Int, j:Int) : Char? {
     if (i < 0 || i >= this[0].length ||  j < 0 || j >= this.size) {
         return null
     } else {

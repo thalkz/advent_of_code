@@ -1,6 +1,6 @@
 package com.thalkz
 
-class Page(
+private class Page(
     val id: Int,
     val before: MutableSet<Page> = mutableSetOf() // java.util.LinkedHashSet<E>
 ) : Comparable<Page> {
@@ -12,10 +12,10 @@ class Page(
     override fun hashCode() = id.hashCode()
 }
 
-val List<Page>.middleValue
+private val List<Page>.middleValue
     get() = this[this.size / 2].id
 
-fun List<Page>.isValidOrder(): Boolean {
+private fun List<Page>.isValidOrder(): Boolean {
     val allBefore = mutableSetOf<Page>()
     for (current in this) {
         if (current in allBefore) {
