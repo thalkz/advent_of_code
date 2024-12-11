@@ -3,7 +3,7 @@ package com.thalkz
 import java.math.BigInteger
 
 private class Equation(
-    val total: BigInteger,
+    val total: BigInteger, // java.math.BigInteger
     val operands: List<BigInteger>
 ) {
     fun isValid(operators: List<Operator>): Boolean = operators.dfs(operands.first(), 1)

@@ -2,11 +2,6 @@ package com.thalkz
 
 import java.lang.Exception
 
-private data class Point(
-    val x: Int,
-    val y: Int,
-)
-
 private data class Guard(
     var point: Point,
     var dir: Direction,
