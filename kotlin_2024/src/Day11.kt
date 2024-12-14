@@ -28,44 +28,52 @@ private fun Stone.secondHalf(digits: Int) = this % 10UL.pow(digits/2)
 
 private  fun Stone.firstHalf(digits: Int) = this / 10UL.pow(digits/2)
 
-fun Sequence<Stone>.blink() = sequence {
-    for (stone in iterator()) {
+fun Map<Stone, ULong>.blink(): Sequence<Pair<Stone, ULong>> = sequence {
+    for ((stone, count) in iterator()) {
         if (stone == 0UL) {
-            yield(1UL)
+            yield(1UL to count)
         } else {
             val digitsCount = stone.countDigits()
             if (digitsCount%2 == 0) {
-                yield(stone.firstHalf(digitsCount))
-                yield(stone.secondHalf(digitsCount))
+                yield(stone.firstHalf(digitsCount) to count)
+                yield(stone.secondHalf(digitsCount)  to count)
             } else {
-                yield(stone*2024UL)
+                yield(stone*2024UL  to count)
             }
         }
     }
 }
 
-fun main() {
-    fun parseInput(lines: List<String>) = lines[0].split(" ")
-        .map { it.toULong() }
-        .asSequence()
-
-    fun part1(lines: List<String>): Int {
-        val initialStones = parseInput(lines)
-        var stones = initialStones
-        repeat(25) {
-            stones = stones.blink()
+fun Map<Stone, ULong>.blinkTimes(times: Int): Map<Stone, ULong> {
+    val initialStones = this
+    var stones = initialStones
+    repeat(times) {
+        stones = stones.blink().fold(mutableMapOf()) { acc, (stone, count) ->
+            val previousCount = acc.getOrDefault(stone, 0UL)
+            acc[stone] = previousCount + count
+            acc
         }
-        return stones.count()
+    }
+    return stones
+}
+
+fun main() {
+    fun parseInput(lines: List<String>): Map<Stone, ULong> = lines[0].split(" ")
+        .map { it.toULong() }
+        .groupingBy { it }
+        .eachCount()
+        .mapValues { entry -> entry.value.toULong() }
+
+    fun part1(lines: List<String>): ULong {
+        val initialStones = parseInput(lines)
+        return initialStones.blinkTimes(25)
+            .entries.sumOf { it.value }
     }
 
-    fun part2(lines: List<String>): Int {
-//        val initialStones = parseInput(lines)
-//        var stones = initialStones
-//        val memo = mutableMapOf<ULong, List<ULong>>()
-//        repeat(15) {
-//            stones = stones.blinkTimes(5, memo)
-//        }
-//        return stones.count()
+    fun part2(lines: List<String>): ULong {
+        val initialStones = parseInput(lines)
+        return initialStones.blinkTimes(75)
+            .entries.sumOf { it.value }
     }
 
     val inputFile = "Day11"
