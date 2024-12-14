@@ -11,13 +11,13 @@ private sealed interface Block {
 }
 
 private class DiskReader(
-    private val encodedMemory: String,
+    private val disk: String,
     range: IntProgression,
 ): Iterable<Block> {
     private val reader = sequence {
         var fileStart = 0
         for (cursor in range) {
-            val fileSize = encodedMemory[cursor] - '0'
+            val fileSize = disk[cursor] - '0'
             val isFile = cursor%2 == 0
             for (i in 0..<fileSize) {
                 if (isFile) {
@@ -63,15 +63,8 @@ fun main() {
             .sum()
     }
 
-    fun part2(lines: List<String>): Int {
-        val disk = lines[0]
-        return 0
-    }
-
     val inputFile = "Day09"
     verify("${inputFile}_test", ::part1, 1928)
-//    verify("${inputFile}_test", ::part2, 2858)
 
     solvePart1(inputFile, ::part1)
-//    solvePart2(inputFile, ::part2)
 }
