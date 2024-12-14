@@ -44,7 +44,7 @@ private fun Point.move(dir: Direction) = when (dir) {
         Direction.Left -> Point(x-1, y)
     }
 
-private fun Guard.walk(grid: List<String>, obstacle: Point? = null): Boolean {
+private fun Guard.walkUphill(grid: List<String>, obstacle: Point? = null): Boolean {
     val pointInFront = point.move(dir)
     val cell = if (obstacle == pointInFront) {
         Cell.Rock
@@ -69,7 +69,7 @@ fun main() {
         val walked = mutableSetOf<Point>()
         val guard = grid.findGuard()
         walked.add(guard.point)
-        while (guard.walk(grid)) {
+        while (guard.walkUphill(grid)) {
             walked.add(guard.point)
         }
         return walked.size
@@ -79,7 +79,7 @@ fun main() {
         val walked = mutableSetOf<Point>()
         val firstGuard = grid.findGuard()
         walked.add(firstGuard.point)
-        while (firstGuard.walk(grid)) {
+        while (firstGuard.walkUphill(grid)) {
             walked.add(firstGuard.point)
         }
 
@@ -104,7 +104,7 @@ fun main() {
 
 private fun List<String>.isLooping(guard: Guard, obstacle: Point): Boolean {
     val walked = mutableSetOf<Pair<Point, Direction>>()
-    while (guard.walk(this, obstacle)) {
+    while (guard.walkUphill(this, obstacle)) {
         if (guard.point to guard.dir in walked) {
             return true
         }
