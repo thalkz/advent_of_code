@@ -1,5 +1,5 @@
 #!/bin/bash
-DAY="11"
+DAY="12"
 
 echo "Generating Day$DAY"
 touch src/Day"$DAY".txt

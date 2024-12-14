@@ -27,10 +27,15 @@ data class Size(
 
 class Grid(private val lines: List<String>) {
     private val size = Size(lines[0].length, lines.size)
+
     val width get() = size.width
+
     val height get() = size.height
+
     operator fun contains(p: Point) = size.contains(p)
+
     fun at(p: Point) = lines[p.y][p.x]
+
     val points = sequence {
         for (j in 0..<height) {
             for (i in 0..<width) {
