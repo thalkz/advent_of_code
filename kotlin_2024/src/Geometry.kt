@@ -8,13 +8,24 @@ data class Point(
     operator fun minus(p: Point) = Point(x-p.x, y-p.y)
 }
 
-val Point.adjacent: List<Point>
-    get() = listOf(
-        Point(x+1, y),
-        Point(x, y+1),
-        Point(x-1, y),
-        Point(x, y-1),
+val Point.adjacent: Map<Direction, Point>
+    get() = mapOf(
+        Direction.Up to Point(x+1, y),
+        Direction.Right to  Point(x, y+1),
+        Direction.Down to Point(x-1, y),
+        Direction.Left to Point(x, y-1),
     )
+
+enum class Direction {
+    Up,
+    Right,
+    Down,
+    Left,
+}
+
+fun Direction.rotateRight() = Direction.entries[(ordinal + 1) % Direction.entries.size]
+
+fun Direction.rotateLeft() = Direction.entries[(ordinal + 3) % Direction.entries.size]
 
 operator fun Int.times(p: Point) = Point(this * p.x, this * p.y)
 

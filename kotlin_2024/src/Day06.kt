@@ -7,15 +7,6 @@ private data class Guard(
     var dir: Direction,
 )
 
-private enum class Direction {
-    Up,
-    Right,
-    Down,
-    Left,
-}
-
-private fun Direction.rotateRight() = Direction.entries[(ordinal + 1) % Direction.entries.size]
-
 private fun List<String>.findGuard(): Guard {
     for (j in 0..lastIndex) {
         for (i in 0..this[j].lastIndex) {

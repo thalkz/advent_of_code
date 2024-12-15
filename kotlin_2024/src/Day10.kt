@@ -5,7 +5,7 @@ fun Grid.walkUphill(visited: MutableSet<Point>, point: Point): Int {
     visited.add(point)
     val altitude = at(point) - '0'
     if (altitude == 9) return 1
-    return point.adjacent.sumOf {
+    return point.adjacent.values.sumOf {
         if (it in this && at(it) - '0' == altitude+1) {
             walkUphill(visited, it)
         } else {
@@ -17,7 +17,7 @@ fun Grid.walkUphill(visited: MutableSet<Point>, point: Point): Int {
 fun Grid.walkRating(point: Point): Int {
     val altitude = at(point) - '0'
     if (altitude == 9) return 1
-    return point.adjacent.sumOf {
+    return point.adjacent.values.sumOf {
         if (it in this && at(it) - '0' == altitude+1) {
             walkRating(it)
         } else {

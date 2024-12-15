@@ -8,7 +8,7 @@ private fun Grid.visitArea(visited: MutableSet<Point>, point: Point): Pair<Int, 
     visited += point
     var totalArea = 1
     var totalPerimeter = 0
-    for (adj in point.adjacent) {
+    for (adj in point.adjacent.values) {
         if (adj !in this || at(adj) != char) {
             totalPerimeter += 1
         } else {
