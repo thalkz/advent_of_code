@@ -1,6 +1,6 @@
 package com.thalkz
 
-private class Warehouse(
+private class WarehousePart1(
     var robot: Point,
     val walls: Set<Point>,
     val boxes: MutableSet<Point>,
@@ -53,7 +53,7 @@ private class Warehouse(
 }
 
 fun main() {
-    fun parseInput(lines: List<String>): Warehouse {
+    fun parseInput(lines: List<String>): WarehousePart1 {
         var robot: Point? = null
         val walls =  mutableSetOf<Point>()
         val boxes = mutableSetOf<Point>()
@@ -83,7 +83,7 @@ fun main() {
             j++
         }
 
-        return Warehouse(
+        return WarehousePart1(
             robot = robot!!,
             boxes = boxes,
             walls = walls,
@@ -111,8 +111,6 @@ fun main() {
 
     val inputFile = "Day15"
     verify("${inputFile}_test", ::part1, 10092)
-    verify("${inputFile}_test", ::part2, 9021)
 
     solvePart1(inputFile, ::part1)
-//    solvePart2(inputFile, ::part2)
 }
