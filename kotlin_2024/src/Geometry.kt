@@ -10,11 +10,18 @@ data class Point(
 
 val Point.adjacent: Map<Direction, Point>
     get() = mapOf(
-        Direction.Up to Point(x+1, y),
-        Direction.Right to  Point(x, y+1),
-        Direction.Down to Point(x-1, y),
-        Direction.Left to Point(x, y-1),
+        Direction.Right to Point(x+1, y),
+        Direction.Down to  Point(x, y+1),
+        Direction.Left to Point(x-1, y),
+        Direction.Up to Point(x, y-1),
     )
+
+fun Point.adjacent(direction: Direction) = when (direction) {
+    Direction.Right -> Point(x+1, y)
+    Direction.Down -> Point(x, y+1)
+    Direction.Left -> Point(x-1, y)
+    Direction.Up -> Point(x, y-1)
+}
 
 enum class Direction {
     Up,

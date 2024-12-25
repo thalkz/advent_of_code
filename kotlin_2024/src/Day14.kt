@@ -22,10 +22,10 @@ private fun String.toPoint(): Point {
     )
 }
 
-fun Point.isTopLeft(size: Size) = x < size.width/2 && y < size.height/2
-fun Point.isTopRight(size: Size) = x > size.width/2 && y < size.height/2
-fun Point.isBottomLeft(size: Size) = x < size.width/2 && y > size.height/2
-fun Point.isBottomRight(size: Size) = x > size.width/2 && y > size.height/2
+private fun Point.isTopLeft(size: Size) = x < size.width/2 && y < size.height/2
+private fun Point.isTopRight(size: Size) = x > size.width/2 && y < size.height/2
+private fun Point.isBottomLeft(size: Size) = x < size.width/2 && y > size.height/2
+private fun Point.isBottomRight(size: Size) = x > size.width/2 && y > size.height/2
 
 fun main() {
     fun parseInput(lines: List<String>): List<Robot> {
