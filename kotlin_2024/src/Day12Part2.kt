@@ -2,11 +2,11 @@ package com.thalkz
 
 private fun Grid.visitArea(visited: MutableSet<Point>, borders: MutableSet<Border>, point: Point): Int {
     if (point in visited) return 0
-    val char = at(point)
+    val char = get(point)
     visited += point
     var totalArea = 1
     for ((direction, adjPoint) in point.adjacent) {
-        if (adjPoint !in this || at(adjPoint) != char) {
+        if (adjPoint !in this || get(adjPoint) != char) {
             borders.add(Border(point, direction))
         } else {
             val area = visitArea(visited, borders, adjPoint)

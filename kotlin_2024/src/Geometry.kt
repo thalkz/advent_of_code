@@ -52,13 +52,22 @@ class Grid(private val lines: List<String>) {
 
     operator fun contains(p: Point) = size.contains(p)
 
-    fun at(p: Point) = lines[p.y][p.x]
+    operator fun get(p: Point) = lines[p.y][p.x]
 
     val points = sequence {
         for (j in 0..<height) {
             for (i in 0..<width) {
                 yield(Point(i, j))
             }
+        }
+    }
+
+    fun println() = println { this[it].toString() }
+
+    fun println(callback: (Point) -> String) {
+        for (j in 0..<height) {
+            val line = (0..<width).joinToString(separator = "") { callback(Point(it, j)) }
+            println(line)
         }
     }
 }

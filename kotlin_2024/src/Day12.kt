@@ -4,12 +4,12 @@ private val EmptyResult = 0 to 0
 
 private fun Grid.visitArea(visited: MutableSet<Point>, point: Point): Pair<Int, Int> {
     if (point in visited) return EmptyResult
-    val char = at(point)
+    val char = get(point)
     visited += point
     var totalArea = 1
     var totalPerimeter = 0
     for (adj in point.adjacent.values) {
-        if (adj !in this || at(adj) != char) {
+        if (adj !in this || get(adj) != char) {
             totalPerimeter += 1
         } else {
             val (area, perimeter) = visitArea(visited, adj)
