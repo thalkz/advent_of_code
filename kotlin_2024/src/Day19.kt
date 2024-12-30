@@ -1,65 +1,38 @@
 package com.thalkz
 
-import java.util.LinkedList
-import java.util.Queue
-
-private data class State(
-    val inputIndex: Int,
-    val patternIndex: Int,
-    val charIndex: Int,
-)
-
 private class Matcher(
     val patterns: List<String>,
     val input: String,
 ) {
-    val queue: Queue<State> = LinkedList()
-    val seen = mutableSetOf<State>()
+    val startIndexToCount = mutableMapOf<Int, ULong>()
 
-    private fun next(
-        inputIndex: Int,
-        patternIndex: Int,
-        charIndex: Int,
-    ): Boolean {
-        if (inputIndex == input.length) {
-            return charIndex == patterns[patternIndex].length
-        }
+    private fun countAt(index: Int): ULong = startIndexToCount[index] ?: 0UL
 
-        when {
-            patternIndex == -1 || charIndex == patterns[patternIndex].length -> {
-                patterns.indices.forEach {
-                    queue.offer(State(
-                        inputIndex = inputIndex,
-                        patternIndex = it,
-                        charIndex = 0,
-                    ))
-                }
-            }
-
-            patterns[patternIndex][charIndex] == input[inputIndex] -> {
-                queue.offer(State(
-                    inputIndex = inputIndex + 1,
-                    patternIndex = patternIndex,
-                    charIndex = charIndex + 1
-                ))
-            }
-        }
-
-        return false
+    private fun match(startIndex: Int, pattern: String): Boolean {
+        return input.regionMatches(startIndex, pattern, 0, pattern.length)
     }
 
-    fun match(): Boolean {
-        queue.offer(State(0, -1, 0))
-        while (queue.isNotEmpty()) {
-            val state = queue.poll()
-//            println(state)
-            if (state in seen) continue
-            seen.add(state)
-            val success = next(state.inputIndex, state.patternIndex, state.charIndex)
-            if (success) return true
+    private fun next(startIndex: Int, count: ULong) {
+        patterns.forEach { pattern ->
+            if (match(startIndex, pattern)) {
+                val endIndex = startIndex + pattern.length
+                startIndexToCount[endIndex] = count + countAt(endIndex)
+            }
         }
-        return false
     }
+
+    fun countValid(): ULong {
+        next(0, 1UL)
+        for (i in input.indices) {
+            val count = countAt(i)
+            if (count > 0UL) {
+                next(i, count)
+            }
+        }
+        return countAt(input.length)
+    }
+
+    fun isValid() = countValid() > 0UL
 }
 
 fun main() {
@@ -70,18 +43,18 @@ fun main() {
 
     fun part1(lines: List<String>): Int {
         val matchers = parseInput(lines)
-        return matchers.count { it.match() }
+        return matchers.count { it.isValid() }
     }
 
-    fun part2(lines: List<String>): Int {
-        val input = parseInput(lines)
-        return 0
+    fun part2(lines: List<String>): ULong {
+        val matchers = parseInput(lines)
+        return matchers.sumOf { it.countValid() }
     }
 
     val inputFile = "Day19"
     verify("${inputFile}_test", ::part1, 6)
-//    verify("${inputFile}_test", ::part2, 16)
+    verify("${inputFile}_test", ::part2, 16)
 
     solvePart1(inputFile, ::part1)
-//    solvePart2(inputFile, ::part2)
+    solvePart2(inputFile, ::part2)
 }
