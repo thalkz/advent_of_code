@@ -4,6 +4,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 mod file;
 
 fn main() {
@@ -12,6 +13,7 @@ fn main() {
     print_day(2, day2::solve, "25663320831");
     print_day(3, day3::solve, "173577199527257");
     print_day(4, day4::solve, "8765");
+    print_day(5, day5::solve, "unknown");
 }
 
 fn print_day<E: Display>(day: u8, solver: fn() -> Result<String, E>, expected: &str) {
