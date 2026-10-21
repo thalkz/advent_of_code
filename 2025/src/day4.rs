@@ -8,7 +8,7 @@ pub fn solve() -> anyhow::Result<String> {
 }
 
 fn solve_for(input: &str) -> anyhow::Result<u64> {
-    let mut grid = Grid::from_str(input)?;
+    let mut grid: Grid = input.parse()?;
 
     let mut result = 0;
     let mut to_remove: Vec<(usize, usize)> = Vec::new();
@@ -27,8 +27,8 @@ fn solve_for(input: &str) -> anyhow::Result<u64> {
             return Ok(result);
         }
 
-        for (x, y) in &to_remove {
-            grid.remove_at(*x, *y);
+        for &(x, y) in &to_remove {
+            grid.remove_at(x, y);
         }
 
         to_remove.clear();
@@ -42,19 +42,22 @@ struct Grid {
 }
 
 impl Grid {
-    fn get(&self, x: usize, y: usize) -> Option<Cell> {
+    fn index(&self, x: usize, y: usize) -> Option<usize> {
         if x >= self.width || y >= self.height {
-            return None;
+            None
+        } else {
+            Some(y * self.width + x)
         }
-        self.cells.get(y * self.width + x).copied()
+    }
+
+    fn get(&self, x: usize, y: usize) -> Option<Cell> {
+        self.index(x, y)
+            .and_then(|idx| self.cells.get(idx).copied())
     }
 
     fn remove_at(&mut self, x: usize, y: usize) {
-        if x >= self.width || y >= self.height {
-            return;
-        }
-        if let Some(cell) = self.cells.get_mut(y * self.width + x) {
-            *cell = Cell::Empty
+        if let Some(i) = self.index(x, y) {
+            self.cells[i] = Cell::Empty;
         }
     }
 
