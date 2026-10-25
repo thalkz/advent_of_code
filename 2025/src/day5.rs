@@ -8,46 +8,46 @@ pub fn solve() -> anyhow::Result<String> {
 }
 
 fn solve_for(input: &str) -> anyhow::Result<u64> {
-    let db: Database = input.parse()?;
+    let mut db: Database = input.parse()?;
 
-    let result: usize = db
-        .ids
-        .iter()
-        .filter(|id| db.fresh.iter().any(|range| range.contains(id)))
-        .count();
+    db.fresh.sort_by_key(|range| *range.start());
+
+    let mut cursor: u64 = 0;
+    let mut result: u64 = 0;
+    for range in &db.fresh {
+        let &to = range.end();
+        if cursor > to {
+            continue;
+        }
+        let from = (*range.start()).max(cursor);
+        result += (to - from) + 1;
+        cursor = to + 1;
+    }
 
     Ok(result as u64)
 }
 
 struct Database {
     fresh: Vec<RangeInclusive<u64>>,
-    ids: Vec<u64>,
 }
 
 impl FromStr for Database {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut after = false;
         let mut fresh = Vec::new();
-        let mut ids = Vec::new();
         for line in s.lines().map(str::trim) {
             if line.is_empty() {
-                after = true;
-                continue;
+                break;
             }
-            if !after {
-                let (start, end) = line
-                    .split_once("-")
-                    .ok_or(anyhow::Error::msg("should contain '-' character"))?;
-                let start = start.parse::<u64>()?;
-                let end = end.parse::<u64>()?;
-                fresh.push(start..=end);
-            } else {
-                ids.push(line.parse::<u64>()?);
-            }
+            let (start, end) = line
+                .split_once("-")
+                .ok_or(anyhow::Error::msg("should contain '-' character"))?;
+            let start = start.parse::<u64>()?;
+            let end = end.parse::<u64>()?;
+            fresh.push(start..=end);
         }
-        Ok(Database { fresh, ids })
+        Ok(Database { fresh })
     }
 }
 
@@ -70,6 +70,6 @@ mod tests {
         32";
 
         let actual = solve_for(input).unwrap();
-        assert_eq!(actual, 3);
+        assert_eq!(actual, 14);
     }
 }
